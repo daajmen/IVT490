@@ -14,8 +14,18 @@ print("LUT-läge avstängt")
 
 # Ställ in wiper-värdet (0–127)
 ds1841.wiper = 127
-print(f"Wiper inställt till: {ds1841.wiper}")
 
 # Läs wiper-värdet
 current_value = ds1841.wiper
 print(f"Aktuellt wiper-värde: {current_value}")
+
+
+while True: 
+
+    input = input("Ange wiper-värde (0–127): ")
+    if input == 'exit':
+        break 
+    else: 
+        ds1841.wiper = int(input)
+        
+    print(f"Wiper inställt till: {ds1841.wiper}")
