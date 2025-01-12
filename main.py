@@ -23,7 +23,7 @@ print(f"Aktuellt wiper-värde: {current_value}")
 while True: 
 
     inputvalue = input("Ange wiper-värde (0–127): ")
-    if input == 'exit':
+    if inputvalue == 'exit':
         break 
     else: 
         ds1841.wiper = int(inputvalue)
