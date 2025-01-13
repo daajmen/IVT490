@@ -56,4 +56,4 @@ def get_data(raw_data):
                 print(f"Ogiltigt värde på index {index}: {values[index]}")
                 parsed_data[name] = None  # Sätt som None om det är ogiltigt
 
-    return parsed_data.items()
+    return parsed_data
