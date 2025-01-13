@@ -41,32 +41,35 @@ mappings = {
     35: ("Tillskott Tillägg", 1),
     36: ("Default SV2 Open", 1)
 }
+def get_data(): 
+    try:
+        while True:
+            raw_data = ser.readline().decode('utf-8').strip()
+            if raw_data:
+                # Dela upp data i värden
+                values = raw_data.split(';')
+                
+                # Mappa värdena till deras namn och skala
+                parsed_data = {}
+                for index, (name, scale) in mappings.items():
+                    if index < len(values):  # Kontrollera att vi inte går utanför datan
+                        try:
+                            raw_value = int(values[index])
+                            parsed_data[name] = raw_value * scale
+                        except ValueError:
+                            print(f"Ogiltigt värde på index {index}: {values[index]}")
+                            parsed_data[name] = None  # Sätt som None om det är ogiltigt
+
+                # Formatera och skriv ut datan
+                #for name, value in parsed_data.items():
+                #    print(f"{name}: {value}")
+
+                return parsed_data.items()
+                print("-" * 40)  # Separator för att göra det lättare att läsa
+    except KeyboardInterrupt:
+        print("Avslutar...")
+    finally:
+        ser.close()
 
 
-print("Lyssnar på värmepumpens data...")
-try:
-    while True:
-        raw_data = ser.readline().decode('utf-8').strip()
-        if raw_data:
-            # Dela upp data i värden
-            values = raw_data.split(';')
-            
-            # Mappa värdena till deras namn och skala
-            parsed_data = {}
-            for index, (name, scale) in mappings.items():
-                if index < len(values):  # Kontrollera att vi inte går utanför datan
-                    try:
-                        raw_value = int(values[index])
-                        parsed_data[name] = raw_value * scale
-                    except ValueError:
-                        print(f"Ogiltigt värde på index {index}: {values[index]}")
-                        parsed_data[name] = None  # Sätt som None om det är ogiltigt
-
-            # Formatera och skriv ut datan
-            for name, value in parsed_data.items():
-                print(f"{name}: {value}")
-            print("-" * 40)  # Separator för att göra det lättare att läsa
-except KeyboardInterrupt:
-    print("Avslutar...")
-finally:
-    ser.close()
+print(get_data())
