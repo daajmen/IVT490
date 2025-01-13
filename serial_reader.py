@@ -1,4 +1,5 @@
 import serial
+from mqtt_handle import data_to_json
 
 # Initiera seriell kommunikation
 ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)
@@ -66,7 +67,7 @@ try:
         raw_data = ser.readline().decode('utf-8').strip()
         if raw_data:
             data = get_data(raw_data)
-            print(data)
+            print(data_to_json(data))
 except KeyboardInterrupt:
     print("Avslutar...")
 finally:
