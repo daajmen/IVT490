@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 import serial
 import os
+import json
 
 # Ladda in miljövariabler
 load_dotenv()
