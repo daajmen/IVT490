@@ -37,8 +37,8 @@ def get_data(raw_data):
         31: ("boost_timer_hotwater", 1),
         32: ("hotwater_prio", 1),
         33: ("addition", 0.1),
-        34: ("addition_rad", 1),
-        35: ("addition_supplement", 1),
+        34: ("addition_rad", 0.1),
+        35: ("addition_supplement", 0.1),
         36: ("default_sv2_open", 1)
     }
 
