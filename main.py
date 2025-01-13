@@ -62,6 +62,13 @@ def serial_to_mqtt():
 
 # Funktion för att hantera wiper-värden
 def handle_wiper():
+    # 39 := 20.6
+    # 40 := 21.1
+    # 41 := 21.9
+    # 42 := 21.9
+    # 43 := 22.0??
+
+
     while True:
         try:
             value = int(input("Enter a value between 0 and 127: "))
@@ -72,11 +79,11 @@ def handle_wiper():
 
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=serial_to_mqtt, daemon=True)
-wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
+#wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
 
 serial_thread.start()
-wiper_thread.start()
+#wiper_thread.start()
 
 # Håll huvudtråden aktiv
 serial_thread.join()
-wiper_thread.join()
+#wiper_thread.join()
