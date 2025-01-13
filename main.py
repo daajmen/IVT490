@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import serial
 import os
 import json
+import threading
 
 # Ladda in miljövariabler
 load_dotenv()
@@ -22,48 +23,60 @@ mqtt_client = connect_to_mqtt(broker, port, user, password)
 # Initiera seriell kommunikation
 ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)
 
+# Funktion för att publicera Home Assistant Discovery-konfiguration
+def publish_discovery_config():
+    for sensor, unit in sensor_config.items():
+        config_topic = f"homeassistant/sensor/{sensor}/config"
+        state_topic = f"heatpump/sensor/{sensor}"
+        payload = {
+            "name": sensor.replace("_", " ").capitalize(),
+            "state_topic": state_topic,
+            "unit_of_measurement": unit,
+            "value_template": "{{ value }}" if unit else None,
+        }
+        mqtt_client.publish(config_topic, json.dumps(payload), retain=True)
 
+# Publicera konfiguration vid start
+publish_discovery_config()
 
-# Publicera Home Assistant Discovery-konfiguration
-for sensor, unit in sensor_config.items():
-    config_topic = f"homeassistant/sensor/{sensor}/config"
-    state_topic = f"heatpump/sensor/{sensor}"
-    payload = {
-        "name": sensor.replace("_", " ").capitalize(),
-        "state_topic": state_topic,
-        "unit_of_measurement": unit,
-        "value_template": "{{ value }}" if unit else None,
-    }
-    mqtt_client.publish(config_topic, json.dumps(payload), retain=True)
+# Funktion för att läsa data från serieporten och publicera till MQTT
+def serial_to_mqtt():
+    try:
+        while True:
+            raw_data = ser.readline().decode('utf-8').strip()
+            if raw_data:
+                data = get_data(raw_data)
 
+                # Skicka varje värde till respektive topic
+                for sensor, value in data.items():
+                    state_topic = f"heatpump/sensor/{sensor}"
+                    mqtt_client.publish(state_topic, value)
 
+                print("Data skickad till MQTT:", data)
 
+    except KeyboardInterrupt:
+        print("Avslutar serial_to_mqtt...")
+    finally:
+        ser.close()
+        print("Seriell anslutning stängd.")
 
-# Läs data från serieporten och skriv ut
-try:
+# Funktion för att hantera wiper-värden
+def handle_wiper():
     while True:
-        raw_data = ser.readline().decode('utf-8').strip()
-        if raw_data:
-            data = get_data(raw_data)
+        try:
+            value = int(input("Enter a value between 0 and 127: "))
+            set_wiper_value(value)
+            print("Wiper value set to", value)
+        except ValueError:
+            print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
 
-            # Skicka varje värde till respektive topic
-            for sensor, value in data.items():
-                state_topic = f"heatpump/sensor/{sensor}"
-                mqtt_client.publish(state_topic, value)
+# Skapa och starta trådar
+serial_thread = threading.Thread(target=serial_to_mqtt, daemon=True)
+wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
 
-            print("Data skickad till MQTT:", data)
+serial_thread.start()
+wiper_thread.start()
 
-except KeyboardInterrupt:
-    print("Avslutar...")
-finally:
-    ser.close()
-    print("Seriell anslutning stängd.")
-
-
-
-
-
-while True:
-    value = int(input("Enter a value between 0 and 127: "))
-    set_wiper_value(value)
-    print("Wiper value set to", value)
+# Håll huvudtråden aktiv
+serial_thread.join()
+wiper_thread.join()
