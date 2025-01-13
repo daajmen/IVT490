@@ -71,5 +71,5 @@ def get_data():
     finally:
         ser.close()
 
-
-print(get_data())
+data = get_data()
+print(data)
