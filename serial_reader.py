@@ -41,35 +41,35 @@ mappings = {
     35: ("addition_supplement", 1),
     36: ("default_sv2_open", 1)
 }
-def get_data(): 
+def get_data(raw_data): 
     try:
-        while True:
-            raw_data = ser.readline().decode('utf-8').strip()
-            if raw_data:
-                # Dela upp data i värden
-                values = raw_data.split(';')
-                
-                # Mappa värdena till deras namn och skala
-                parsed_data = {}
-                for index, (name, scale) in mappings.items():
-                    if index < len(values):  # Kontrollera att vi inte går utanför datan
-                        try:
-                            raw_value = int(values[index])
-                            parsed_data[name] = round(raw_value * scale,1)
-                        except ValueError:
-                            print(f"Ogiltigt värde på index {index}: {values[index]}")
-                            parsed_data[name] = None  # Sätt som None om det är ogiltigt
+        # Dela upp data i värden
+        values = raw_data.split(';')
+        
+        # Mappa värdena till deras namn och skala
+        parsed_data = {}
+        for index, (name, scale) in mappings.items():
+            if index < len(values):  # Kontrollera att vi inte går utanför datan
+                try:
+                    raw_value = int(values[index])
+                    parsed_data[name] = round(raw_value * scale,1)
+                except ValueError:
+                    print(f"Ogiltigt värde på index {index}: {values[index]}")
+                    parsed_data[name] = None  # Sätt som None om det är ogiltigt
 
-                # Formatera och skriv ut datan
-                #for name, value in parsed_data.items():
-                #    print(f"{name}: {value}")
+        # Formatera och skriv ut datan
+        #for name, value in parsed_data.items():
+        #    print(f"{name}: {value}")
 
-                return parsed_data.items()
-                print("-" * 40)  # Separator för att göra det lättare att läsa
+        return parsed_data.items()
     except KeyboardInterrupt:
         print("Avslutar...")
     finally:
         ser.close()
 
-data = get_data()
-print(data)
+raw_data = ser.readline().decode('utf-8').strip()
+
+while True: 
+    if raw_data: 
+        data = get_data(raw_data)
+        print(data)
