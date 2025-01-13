@@ -4,6 +4,7 @@ from serial_reader import get_data
 from dotenv import load_dotenv
 
 import serial
+import os
 
 # Ladda in miljövariabler
 load_dotenv()
