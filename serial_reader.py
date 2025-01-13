@@ -67,9 +67,10 @@ def get_data(raw_data):
     finally:
         ser.close()
 
-raw_data = ser.readline().decode('utf-8').strip()
+
 
 while True: 
+    raw_data = ser.readline().decode('utf-8').strip()    
     if raw_data: 
         data = get_data(raw_data)
         print(data)
