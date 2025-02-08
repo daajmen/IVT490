@@ -2,12 +2,14 @@ from wiper import set_wiper_value
 from mqtt_handle import data_to_json, connect_to_mqtt
 from serial_reader import get_data
 from sensors_units import sensor_config
+from API_tools import average_temperature
 from dotenv import load_dotenv
 
 import serial
 import os
 import json
 import threading
+import time
 
 # Ladda in miljövariabler
 load_dotenv()
@@ -77,13 +79,25 @@ def handle_wiper():
         except ValueError:
             print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
 
+def average_mqtt():
+    while True: 
+        state_topic = f"heatpump/sensor/average_temp"
+        mqtt_client.publish(state_topic, average_temperature())
+        time.sleep(60)
+
+
+
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=serial_to_mqtt, daemon=True)
+average = threading.Thread(target=average_mqtt, daemon=True)
+
 #wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
 
 serial_thread.start()
+average.start()
 #wiper_thread.start()
 
 # Håll huvudtråden aktiv
 serial_thread.join()
+average.join()
 #wiper_thread.join()
