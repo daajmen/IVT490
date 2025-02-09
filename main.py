@@ -2,7 +2,7 @@ from wiper import set_wiper_value
 from mqtt_handle import data_to_json, connect_to_mqtt
 from serial_reader import get_data
 from sensors_units import sensor_config
-from API_tools import average_temperature
+from API_tools import average_temperature, average_temperature_weight
 from dotenv import load_dotenv
 
 import serial
@@ -85,11 +85,32 @@ def average_mqtt():
         mqtt_client.publish(state_topic, average_temperature())
         time.sleep(60)
 
+# Variabel för att lagra det senaste viktvärdet
+latest_weight = None
+
+# Callback-funktion för att hantera inkommande meddelanden
+def on_message(client, userdata, message):
+    global latest_weight
+    if message.topic == "heatpump/sensor/weight":
+        latest_weight = float(message.payload.decode())
+        print(f"Viktvärde mottaget: {latest_weight}")
+
+# Prenumerera på viktämnet och tilldela callback-funktionen
+mqtt_client.subscribe("heatpump/sensor/weight")
+mqtt_client.on_message = on_message
+
+def average_weight_mqtt():
+    global latest_weight
+    while True: 
+        if latest_weight is not None:
+            state_topic = f"heatpump/sensor/average_temp"
+            mqtt_client.publish(state_topic, average_temperature_weight(latest_weight))
+        time.sleep(60)
 
 
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=serial_to_mqtt, daemon=True)
-average = threading.Thread(target=average_mqtt, daemon=True)
+average = threading.Thread(target=average_weight_mqtt, daemon=True)
 
 #wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
 

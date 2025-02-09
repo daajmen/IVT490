@@ -23,11 +23,12 @@ def average_temperature():
     temp_upper_floor = float(fetch_value('sensor.ovre_vaning_temperatur'))
     return (temp_lower_floor + temp_upper_floor) / 2
 
-#temp_lower_floor = float(fetch_value('sensor.nedre_vaning_temperatur')) 
-#temp_upper_floor = float(fetch_value('sensor.ovre_vaning_temperatur'))
-#
-#print(temp_lower_floor)
-#print(temp_upper_floor)
-#temp_average = (temp_lower_floor + temp_upper_floor) / 2
-#
-#print(f'Medeltemperaturen är just nu : {temp_average}°C')
+def average_temperature_weight(input_weight):
+    temp_lower_floor = float(fetch_value('sensor.nedre_vaning_temperatur')) 
+    temp_upper_floor = float(fetch_value('sensor.ovre_vaning_temperatur'))
+
+    weight = ((100 - input_weight) * 0.01)
+
+    return (weight * temp_upper_floor) + ((1 - weight) * temp_lower_floor)
+
+
