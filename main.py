@@ -79,14 +79,10 @@ def handle_wiper():
         except ValueError:
             print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
 
-def average_mqtt():
-    while True: 
-        state_topic = f"heatpump/sensor/average_temp"
-        mqtt_client.publish(state_topic, average_temperature())
-        time.sleep(60)
+
 
 # Variabel för att lagra det senaste viktvärdet
-latest_weight = None
+latest_weight = 100
 
 # Callback-funktion för att hantera inkommande meddelanden
 def on_message(client, userdata, message):
@@ -95,16 +91,16 @@ def on_message(client, userdata, message):
         latest_weight = float(message.payload.decode())
         print(f"Viktvärde mottaget: {latest_weight}")
 
-# Prenumerera på viktämnet och tilldela callback-funktionen
-mqtt_client.subscribe("heatpump/sensor/weight")
-mqtt_client.on_message = on_message
-
-def average_weight_mqtt():
-    global latest_weight
+def average_mqtt():
     while True: 
-        if latest_weight is not None:
-            state_topic = f"heatpump/sensor/average_temp"
-            mqtt_client.publish(state_topic, average_temperature_weight(latest_weight))
+        state_topic = f"heatpump/sensor/average_temp"
+        mqtt_client.publish(state_topic, average_temperature())
+        time.sleep(60)
+
+def average_weight_mqtt(latest_weight):
+    while True: 
+        state_topic = f"heatpump/sensor/average_temp"
+        mqtt_client.publish(state_topic, average_temperature_weight(latest_weight))
         time.sleep(60)
 
 
