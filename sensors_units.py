@@ -36,5 +36,6 @@ sensor_config = {
     "addition_rad": "%",
     "addition_supplement": "%",
     "default_sv2_open": "",
-    "average_temp": "°C"
+    "average_temp": "°C",
+    "weight": "%"
 }
