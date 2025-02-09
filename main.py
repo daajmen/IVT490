@@ -29,7 +29,7 @@ mqtt_client = connect_to_mqtt(broker, port, user, password)
 # Callback-funktion för att hantera inkommande meddelanden
 def on_message(client, userdata, message):
     global latest_weight
-    latest_weight = message.payload.decode()
+    latest_weight = float(message.payload.decode())
     print(f"Variabel uppdaterad från MQTT: {latest_weight}")
 
 # Sätt callback-funktionen för inkommande meddelanden
