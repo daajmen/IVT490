@@ -106,7 +106,7 @@ def average_weight_mqtt(latest_weight):
 
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=serial_to_mqtt, daemon=True)
-average = threading.Thread(target=average_weight_mqtt, daemon=True)
+average = threading.Thread(target=average_weight_mqtt(latest_weight), daemon=True)
 
 #wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
 
