@@ -39,6 +39,8 @@ mqtt_client.on_message = on_message
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Ansluten till MQTT-broker")
+        state_topic = f"heatpump/sensor/weight"
+        mqtt_client.publish(state_topic, 100)
         client.subscribe("heatpump/sensor/weight", qos=1)  # Prenumerera på topic för vikt med QoS 1
     else:
         print(f"Misslyckades att ansluta till MQTT-broker. Felkod: {rc}")
