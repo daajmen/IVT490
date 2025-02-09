@@ -69,8 +69,6 @@ def handle_wiper():
     # 41 := 21.9
     # 42 := 21.9
     # 43 := 22.0??
-
-
     while True:
         try:
             value = int(input("Enter a value between 0 and 127: "))
@@ -78,8 +76,6 @@ def handle_wiper():
             print("Wiper value set to", value)
         except ValueError:
             print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
-
-
 
 # Variabel för att lagra det senaste viktvärdet
 latest_weight = 100
@@ -97,7 +93,8 @@ def average_mqtt():
         mqtt_client.publish(state_topic, average_temperature())
         time.sleep(60)
 
-def average_weight_mqtt(latest_weight):
+def average_weight_mqtt():
+    global latest_weight
     while True: 
         state_topic = f"heatpump/sensor/average_temp"
         mqtt_client.publish(state_topic, average_temperature_weight(latest_weight))
@@ -106,7 +103,7 @@ def average_weight_mqtt(latest_weight):
 
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=serial_to_mqtt, daemon=True)
-average = threading.Thread(target=average_weight_mqtt(latest_weight), daemon=True)
+average = threading.Thread(target=average_weight_mqtt, daemon=True)
 
 #wiper_thread = threading.Thread(target=handle_wiper, daemon=True)
 
