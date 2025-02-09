@@ -117,7 +117,7 @@ def average_weight_mqtt():
     global latest_weight
     while True: 
         state_topic = f"heatpump/sensor/average_temp"
-        mqtt_client.publish(state_topic, average_temperature_weight(latest_weight).round(1))
+        mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))
         print(f'debug weight: {latest_weight}')
         print(f'debug average: {average_temperature_weight(latest_weight)}')
 
