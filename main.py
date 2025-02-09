@@ -14,6 +14,10 @@ import time
 # Ladda in miljövariabler
 load_dotenv()
 
+# Variabel för att lagra det senaste viktvärdet
+latest_weight = 100
+
+# Mappa värden
 broker = os.getenv("MQTT_BROKER")
 port = int(os.getenv("MQTT_PORT"))
 user = os.getenv("MQTT_USER")
@@ -21,6 +25,34 @@ password = os.getenv("MQTT_PASSWORD")
 
 # Anslut till mqtt-broker
 mqtt_client = connect_to_mqtt(broker, port, user, password)
+
+# Callback-funktion för att hantera inkommande meddelanden
+def on_message(client, userdata, message):
+    global latest_weight
+    latest_weight = message.payload.decode()
+    print(f"Variabel uppdaterad från MQTT: {latest_weight}")
+
+# Sätt callback-funktionen för inkommande meddelanden
+mqtt_client.on_message = on_message
+
+# Prenumerera på önskat topic när du ansluter till brokern
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Ansluten till MQTT-broker")
+        client.subscribe("heatpump/sensor/weight", qos=1)  # Prenumerera på topic för vikt med QoS 1
+    else:
+        print(f"Misslyckades att ansluta till MQTT-broker. Felkod: {rc}")
+
+# Sätt callback-funktionen för anslutning
+mqtt_client.on_connect = on_connect
+
+# Starta MQTT-loopen för att lyssna efter meddelanden
+mqtt_client.loop_start()
+
+
+
+
+
 
 # Initiera seriell kommunikation
 ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)
@@ -64,11 +96,7 @@ def serial_to_mqtt():
 
 # Funktion för att hantera wiper-värden
 def handle_wiper():
-    # 39 := 20.6
-    # 40 := 21.1
-    # 41 := 21.9
-    # 42 := 21.9
-    # 43 := 22.0??
+    # 39 := 20.6    # 40 := 21.1    # 41 := 21.9    # 42 := 21.9    # 43 := 22.0??
     while True:
         try:
             value = int(input("Enter a value between 0 and 127: "))
@@ -76,16 +104,6 @@ def handle_wiper():
             print("Wiper value set to", value)
         except ValueError:
             print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
-
-# Variabel för att lagra det senaste viktvärdet
-latest_weight = 100
-
-# Callback-funktion för att hantera inkommande meddelanden
-def on_message(client, userdata, message):
-    global latest_weight
-    if message.topic == "heatpump/sensor/weight":
-        latest_weight = float(message.payload.decode())
-        print(f"Viktvärde mottaget: {latest_weight}")
 
 def average_mqtt():
     while True: 
