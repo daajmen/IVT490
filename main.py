@@ -60,7 +60,7 @@ def on_connect(client, userdata, flags, rc):
         state_topic = f"heatpump/sensor/weight"
         wiper_topic = f"heatpump/sensor/wiper"
         mqtt_client.publish(state_topic, 100)
-        mqtt_client.publish(wiper_topic, 100)
+        mqtt_client.publish(wiper_topic, 41)
         
         # Prenumerera på alla önskade ämnen
         client.subscribe("heatpump/sensor/weight", qos=1)
