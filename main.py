@@ -30,6 +30,9 @@ mqtt_client = connect_to_mqtt(broker, port, user, password)
 def on_message(client, userdata, message):
     global latest_weight
     latest_weight = float(message.payload.decode())
+    # Uppdatera average temp
+    state_topic = f"heatpump/sensor/average_temp"
+    mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))    
     print(f"Variabel uppdaterad från MQTT: {latest_weight}")
 
 # Sätt callback-funktionen för inkommande meddelanden
