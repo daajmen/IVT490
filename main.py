@@ -16,6 +16,7 @@ load_dotenv()
 
 # Variabel för att lagra det senaste viktvärdet
 latest_weight = 100
+latest_wiper = 40
 
 # Mappa värden
 broker = os.getenv("MQTT_BROKER")
@@ -29,11 +30,24 @@ mqtt_client = connect_to_mqtt(broker, port, user, password)
 # Callback-funktion för att hantera inkommande meddelanden
 def on_message(client, userdata, message):
     global latest_weight
-    latest_weight = float(message.payload.decode())
-    # Uppdatera average temp
-    state_topic = f"heatpump/sensor/average_temp"
-    mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))    
-    print(f"Variabel uppdaterad från MQTT: {latest_weight}")
+    
+    try:
+        # Hantera olika ämnen
+        if message.topic == "heatpump/sensor/weight":
+            latest_weight = float(message.payload.decode())
+            # Uppdatera average temp
+            state_topic = f"heatpump/sensor/average_temp"
+            mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))    
+            print(f"Viktvärde uppdaterat från MQTT: {latest_weight}")
+        
+        elif message.topic == "heatpump/sensor/wiper":
+            latest_wiper = int(message.payload.decode())
+            handle_wiper(latest_wiper)
+            print(f"Meddelande från wiper: {latest_wiper}")
+            # Hantera other_topic här
+    except: 
+        print('failure i on_message')
+
 
 # Sätt callback-funktionen för inkommande meddelanden
 mqtt_client.on_message = on_message
@@ -42,12 +56,16 @@ mqtt_client.on_message = on_message
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Ansluten till MQTT-broker")
+        # Publicera startvärde för vikt
         state_topic = f"heatpump/sensor/weight"
         mqtt_client.publish(state_topic, 100)
-        client.subscribe("heatpump/sensor/weight", qos=1)  # Prenumerera på topic för vikt med QoS 1
+        
+        # Prenumerera på alla önskade ämnen
+        client.subscribe("heatpump/sensor/weight", qos=1)
+        client.subscribe("heatpump/sensor/wiper", qos=1)
+        # Lägg till fler prenumerationer här
     else:
         print(f"Misslyckades att ansluta till MQTT-broker. Felkod: {rc}")
-
 # Sätt callback-funktionen för anslutning
 mqtt_client.on_connect = on_connect
 
@@ -100,15 +118,13 @@ def serial_to_mqtt():
         print("Seriell anslutning stängd.")
 
 # Funktion för att hantera wiper-värden
-def handle_wiper():
+def handle_wiper(input_value):
     # 39 := 20.6    # 40 := 21.1    # 41 := 21.9    # 42 := 21.9    # 43 := 22.0??
-    while True:
-        try:
-            value = int(input("Enter a value between 0 and 127: "))
-            set_wiper_value(value)
-            print("Wiper value set to", value)
-        except ValueError:
-            print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
+    try:
+        set_wiper_value(input_value)
+        print("Wiper value set to", input_value)
+    except ValueError:
+        print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")
 
 def average_mqtt():
     while True: 
