@@ -88,7 +88,7 @@ def serial_to_mqtt():
                     state_topic = f"heatpump/sensor/{sensor}"
                     mqtt_client.publish(state_topic, value)
 
-                print("Data skickad till MQTT:", data)
+                #debug >>print("Data skickad till MQTT:", data)
 
     except KeyboardInterrupt:
         print("Avslutar serial_to_mqtt...")
@@ -115,13 +115,16 @@ def average_mqtt():
 
 def average_weight_mqtt():
     global latest_weight
-    while True: 
-        state_topic = f"heatpump/sensor/average_temp"
-        mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))
-        print(f'debug weight: {latest_weight}')
-        print(f'debug average: {average_temperature_weight(latest_weight)}')
-
-        time.sleep(60)
+    try: 
+        while True: 
+            state_topic = f"heatpump/sensor/average_temp"
+            mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))
+            print(f'debug weight: {latest_weight}')
+            print(f'debug average: {average_temperature_weight(latest_weight)}')
+    except: 
+        print('Something went wrong') 
+        
+    time.sleep(60)
 
 
 # Skapa och starta trådar
