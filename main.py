@@ -73,7 +73,7 @@ mqtt_client.on_connect = on_connect
 mqtt_client.loop_start()
 
 # Publicera konfiguration vid start
-publish_discovery_config()
+publish_discovery_config(mqtt_client)
 
 # Initiera seriell kommunikation
 ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)    

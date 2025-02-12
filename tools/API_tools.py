@@ -2,7 +2,6 @@ import datetime
 import requests 
 from secret import API_KEY
 from assets.sensors_units import sensor_config
-from main import mqtt_client
 import json
 
 def fetch_value(entity):
@@ -36,7 +35,7 @@ def average_temperature_weight(input_weight):
 
 
 # Funktion för att publicera Home Assistant Discovery-konfiguration
-def publish_discovery_config():
+def publish_discovery_config(mqtt_client):
     for sensor, unit in sensor_config.items():
         config_topic = f"homeassistant/sensor/{sensor}/config"
         state_topic = f"heatpump/sensor/{sensor}"
