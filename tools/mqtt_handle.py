@@ -1,5 +1,5 @@
 from tools.API_tools import average_temperature, average_temperature_weight
-from serial_reader import get_data
+from tools.serial_reader import get_data
 
 import serial
 import json 
