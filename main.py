@@ -88,7 +88,7 @@ def run_optimization(room, average):
         print(f'Wiper värde : {latest_wiper}')
         print(f'Värmepumpsgivare : {room}')
         print(f'Medelvärde via HA : {average}')
-        time.sleep(10)
+        time.sleep(300)
     except Exception as e:
         print(f'Something went wrong: {e}')
 
