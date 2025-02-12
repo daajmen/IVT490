@@ -79,8 +79,8 @@ publish_discovery_config()
 ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)    
 
 # Skapa och starta trådar
-serial_thread = threading.Thread(target=serial_to_mqtt(ser), daemon=True)
-average = threading.Thread(target=average_weight_mqtt, daemon=True)
+serial_thread = threading.Thread(target=serial_to_mqtt(ser,mqtt_client), daemon=True)
+average = threading.Thread(target=average_weight_mqtt(mqtt_client), daemon=True)
 
 
 serial_thread.start()

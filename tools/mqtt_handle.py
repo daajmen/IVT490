@@ -1,7 +1,5 @@
-from main import mqtt_client
 from API_tools import average_temperature, average_temperature_weight
 from serial_reader import get_data
-
 
 import serial
 import json 
@@ -24,13 +22,13 @@ def connect_to_mqtt(broker, port, user, password):
     client.connect(broker, port)
     return client
 
-def average_mqtt():
+def average_mqtt(mqtt_client):
     while True: 
         state_topic = f"heatpump/sensor/average_temp"
         mqtt_client.publish(state_topic, average_temperature())
         time.sleep(60)
 
-def average_weight_mqtt():
+def average_weight_mqtt(mqtt_client):
     global latest_weight
     try: 
         while True: 
@@ -43,7 +41,7 @@ def average_weight_mqtt():
 
 
 # Funktion för att läsa data från serieporten och publicera till MQTT
-def serial_to_mqtt(ser):
+def serial_to_mqtt(ser,mqtt_client):
 
     try:
         while True:
