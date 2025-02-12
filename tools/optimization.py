@@ -1,7 +1,7 @@
 import time 
 
 def correction_wiper(wiper_value, heatpump_roomsensor, house_average_temperature): 
-    MAX_WIPER = 42
+    MAX_WIPER = 43
     MIN_WIPER = 39
     TEMP_THRESHOLD = 0.4
    # Högre wiper är högre temp
