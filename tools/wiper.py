@@ -19,5 +19,6 @@ def handle_wiper(input_value):
     try:
         set_wiper_value(input_value)
         print("Wiper value set to", input_value)
+        return input_value
     except ValueError:
         print("Ogiltigt värde! Ange ett tal mellan 0 och 127.")

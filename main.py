@@ -1,7 +1,8 @@
 from tools.wiper import handle_wiper
 from tools.mqtt_handle import connect_to_mqtt, average_weight_mqtt, serial_to_mqtt
 from assets.sensors_units import sensor_config
-from tools.API_tools import average_temperature_weight, publish_discovery_config
+from tools.API_tools import average_temperature_weight, publish_discovery_config, fetch_value
+from tools.optimization import correction_wiper
 from dotenv import load_dotenv
 
 import serial
@@ -38,11 +39,11 @@ def on_message(client, userdata, message):
             mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))    
             print(f"Viktvärde uppdaterat från MQTT: {latest_weight}")
         
-        elif message.topic == "heatpump/sensor/wiper":
-            latest_wiper = int(message.payload.decode())
-            handle_wiper(latest_wiper)
-            print(f"Meddelande från wiper: {latest_wiper}")
-            # Hantera other_topic här
+        #elif message.topic == "heatpump/sensor/wiper":
+        #    latest_wiper = int(message.payload.decode())
+        #    handle_wiper(latest_wiper)
+        #    print(f"Meddelande från wiper: {latest_wiper}")
+        #    # Hantera other_topic här
     except: 
         print('failure i on_message')
 
@@ -78,13 +79,27 @@ publish_discovery_config(mqtt_client)
 # Initiera seriell kommunikation
 ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)    
 
+
+#Hantering optimering
+def run_optimization(room, average): 
+    global latest_wiper
+    latest_wiper = handle_wiper(correction_wiper(latest_wiper, room, average))
+    print(f'Wiper värde : {wiper}')
+    print(f'Värmepumpsgivare : {room}')
+    print(f'Medelvärde via HA : {average}')
+    time.sleep(10)
+
+
+
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=serial_to_mqtt(ser,mqtt_client), daemon=True)
 average = threading.Thread(target=average_weight_mqtt(mqtt_client), daemon=True)
-
+opti = threading.Thread(target=run_optimization(latest_wiper,float(fetch_value('sensor.roomtemp')),float(fetch_value('sensor.average_temp')) ))
 
 serial_thread.start()
 average.start()
+opti.start()
 
 serial_thread.join()
 average.join()
+opti().join()
