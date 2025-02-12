@@ -84,7 +84,7 @@ ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)
 def run_optimization(room, average): 
     global latest_wiper
     latest_wiper = handle_wiper(correction_wiper(latest_wiper, room, average))
-    print(f'Wiper värde : {wiper}')
+    print(f'Wiper värde : {latest_wiper}')
     print(f'Värmepumpsgivare : {room}')
     print(f'Medelvärde via HA : {average}')
     time.sleep(10)
