@@ -83,12 +83,14 @@ ser = serial.Serial('/dev/ttyUSB0', baudrate=9600, timeout=1)
 #Hantering optimering
 def run_optimization(room, average): 
     global latest_wiper
-    latest_wiper = handle_wiper(correction_wiper(latest_wiper, room, average))
-    print(f'Wiper värde : {latest_wiper}')
-    print(f'Värmepumpsgivare : {room}')
-    print(f'Medelvärde via HA : {average}')
-    time.sleep(10)
-
+    try:
+        latest_wiper = handle_wiper(correction_wiper(latest_wiper, room, average))
+        print(f'Wiper värde : {latest_wiper}')
+        print(f'Värmepumpsgivare : {room}')
+        print(f'Medelvärde via HA : {average}')
+        time.sleep(10)
+    except Exception as e:
+        print(f'Something went wrong: {e}')
 
 
 # Skapa och starta trådar
