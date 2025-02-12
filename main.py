@@ -1,8 +1,7 @@
-from tools.wiper import set_wiper_value, handle_wiper
-from tools.mqtt_handle import data_to_json, connect_to_mqtt, average_mqtt, average_weight_mqtt, serial_to_mqtt
-from tools.serial_reader import get_data
+from tools.wiper import handle_wiper
+from tools.mqtt_handle import connect_to_mqtt, average_weight_mqtt, serial_to_mqtt
 from assets.sensors_units import sensor_config
-from tools.API_tools import average_temperature, average_temperature_weight, publish_discovery_config
+from tools.API_tools import average_temperature_weight, publish_discovery_config
 from dotenv import load_dotenv
 
 import serial
