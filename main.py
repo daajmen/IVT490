@@ -1,5 +1,5 @@
 from tools.wiper import handle_wiper
-from tools.mqtt_handle import connect_to_mqtt, average_weight_mqtt, serial_to_mqtt
+from tools.mqtt_handle import connect_to_mqtt, average_weight_mqtt, serial_to_mqtt, average_temperature
 from assets.sensors_units import sensor_config
 from tools.API_tools import average_temperature_weight, publish_discovery_config, fetch_value
 from tools.optimization import correction_wiper
@@ -35,8 +35,8 @@ def on_message(client, userdata, message):
         if message.topic == "heatpump/sensor/weight":
             latest_weight = float(message.payload.decode())
             # Uppdatera average temp
-            state_topic = f"heatpump/sensor/average_temp"
-            mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))    
+            #state_topic = f"heatpump/sensor/average_temp"
+            #mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))    
             print(f"Viktvärde uppdaterat från MQTT: {latest_weight}")
         
         #elif message.topic == "heatpump/sensor/wiper":
@@ -101,7 +101,7 @@ def run_optimization_loop():
 def average_calculation(mqtt_client): 
     global latest_weight
     while True: 
-        average_weight_mqtt(mqtt_client, latest_weight)
+        average_temperature(mqtt_client)
         time.sleep(60)
 
 # Skapa och starta trådar
