@@ -98,9 +98,15 @@ def run_optimization_loop():
         avg_temp = float(fetch_value('sensor.average_temp'))
         run_optimization(room_temp, avg_temp)
 
+def average_calculation(mqtt_client): 
+    global latest_weight
+    while True: 
+        average_weight_mqtt(mqtt_client, latest_weight)
+        time.sleep(60)
+
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=lambda: serial_to_mqtt(ser, mqtt_client), daemon=True)
-average = threading.Thread(target=lambda: average_weight_mqtt(mqtt_client, latest_weight), daemon=True)
+average = threading.Thread(target=lambda: average_calculation(mqtt_client), daemon=True)
 opti = threading.Thread(target=run_optimization_loop, daemon=True)
 
 serial_thread.start()

@@ -33,10 +33,8 @@ def average_weight_mqtt(mqtt_client, latest_weight):
         while True: 
             state_topic = f"heatpump/sensor/average_temp"
             mqtt_client.publish(state_topic, round(average_temperature_weight(latest_weight),1))
-            time.sleep(60)
     except Exception as e:
         print(f'Something went wrong: {e}')
-        time.sleep(300)  # Vänta lite innan nästa försök
 
 
 # Funktion för att läsa data från serieporten och publicera till MQTT
