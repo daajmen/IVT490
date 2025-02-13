@@ -1,5 +1,5 @@
 from tools.wiper import handle_wiper
-from tools.mqtt_handle import connect_to_mqtt, average_weight_mqtt, serial_to_mqtt, average_temperature
+from tools.mqtt_handle import connect_to_mqtt, average_weight_mqtt, serial_to_mqtt, average_mqtt
 from assets.sensors_units import sensor_config
 from tools.API_tools import average_temperature_weight, publish_discovery_config, fetch_value
 from tools.optimization import correction_wiper
@@ -101,7 +101,7 @@ def run_optimization_loop():
 def average_calculation(mqtt_client): 
     global latest_weight
     while True: 
-        average_temperature(mqtt_client)
+        average_mqtt(mqtt_client)
         time.sleep(60)
 
 # Skapa och starta trådar
