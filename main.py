@@ -85,24 +85,34 @@ def run_optimization(room, average):
     global latest_wiper
     try:
         latest_wiper = handle_wiper(correction_wiper(latest_wiper, room, average))
-        print(f'Wiper värde : {latest_wiper}')
-        print(f'Värmepumpsgivare : {room}')
-        print(f'Medelvärde via HA : {average}')
+       #print(f'Wiper värde : {latest_wiper}')
+       #print(f'Värmepumpsgivare : {room}')
+       #print(f'Medelvärde via HA : {average}')
         time.sleep(300)
     except Exception as e:
         print(f'Something went wrong: {e}')
 
 def run_optimization_loop():
     while True:
-        room_temp = float(fetch_value('sensor.roomtemp'))
-        avg_temp = float(fetch_value('sensor.average_temp'))
-        run_optimization(room_temp, avg_temp)
+        try:
+            room_temp = float(fetch_value('sensor.roomtemp'))
+            avg_temp = float(fetch_value('sensor.average_temp'))
+            run_optimization(room_temp, avg_temp)
+        except Exception as e:
+            print(f"Fel i optimization loop: {e}")
+            print("Väntar 60 sekunder innan nästa försök...")
+            time.sleep(60)
 
 def average_calculation(mqtt_client): 
     global latest_weight
     while True: 
-        average_mqtt(mqtt_client)
-        time.sleep(60)
+        try:
+            average_mqtt(mqtt_client)
+            time.sleep(60)
+        except Exception as e:
+            print(f"Fel i average calculation: {e}")
+            print("Väntar 60 sekunder innan nästa försök...")
+            time.sleep(60)
 
 # Skapa och starta trådar
 serial_thread = threading.Thread(target=lambda: serial_to_mqtt(ser, mqtt_client), daemon=True)

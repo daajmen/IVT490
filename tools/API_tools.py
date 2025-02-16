@@ -23,7 +23,7 @@ def fetch_value(entity):
 def average_temperature():
     temp_lower_floor = float(fetch_value('sensor.nedre_vaning_temperatur')) 
     temp_upper_floor = float(fetch_value('sensor.ovre_vaning_temperatur'))
-    return (temp_lower_floor + temp_upper_floor) / 2
+    return round((temp_lower_floor + temp_upper_floor) / 2,1)
 
 def average_temperature_weight(input_weight):
     temp_lower_floor = float(fetch_value('sensor.nedre_vaning_temperatur')) 

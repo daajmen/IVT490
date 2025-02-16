@@ -17,15 +17,26 @@ def data_to_json(data):
 
 # Anslut till mqtt-broker
 def connect_to_mqtt(broker, port, user, password):
-    client = mqtt.Client()
-    client.username_pw_set(user, password)
-    client.connect(broker, port)
-    return client
+    try:
+        client = mqtt.Client()
+        client.username_pw_set(user, password)
+        client.connect(broker, port)
+        print("Ansluten till MQTT broker")
+        return client
+    except Exception as e:
+        print(f"Kunde inte ansluta till MQTT broker: {e}")
+        raise  # Låt anroparen hantera återanslutningsförsök
 
 def average_mqtt(mqtt_client):
     while True: 
-        state_topic = f"heatpump/sensor/average_temp"
-        mqtt_client.publish(state_topic, average_temperature())
+        try:
+            state_topic = f"heatpump/sensor/average_temp"
+            mqtt_client.publish(state_topic, average_temperature())
+            time.sleep(60)
+        except Exception as e:
+            print(f"Fel i average_mqtt: {e}")
+            print("Väntar 60 sekunder innan nästa försök...")
+            time.sleep(60)
 
 def average_weight_mqtt(mqtt_client, latest_weight):
     try: 
