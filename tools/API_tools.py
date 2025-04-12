@@ -6,7 +6,7 @@ import json
 
 def fetch_value(entity):
 
-    url = f"http://192.168.50.11:8123/api/states/{entity}"
+    url = f"http://192.168.50.16:8123/api/states/{entity}"
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "content-type": "application/json",
